@@ -98,40 +98,44 @@ int main(void)
     while(1)
     {
         uint8_t* p1 = GetSensorData();
-          reading = p1[0];
-          reading = reading << 8;
-          reading |= p1[1];
-          reading = reading << 8;
-          reading |= p1[2];
-          if (reading >= 8388608) {
+        reading = p1[0];
+        reading = reading << 8;
+        reading |= p1[1];
+        reading = reading << 8;
+        reading |= p1[2];
+        if (reading >= 8388608) {
             fDat = (int32_t)(reading - 16777216) / 8388608.0f;
-          } else {
+        } else {
             fDat = reading / 8388608.0f;
-          }
-          press = fDat * 125 + 17.5;//WF5803_1BAR
-          printf("press= %d.%d \r\n",(int)press,((int)(press*100.0f)%100));
-          if (a) {press_air = press ; a = 0;}
-                    press = press_air > press ? press_air : press;
-                    int deep_100 = (int)(100*((press - press_air)/0.098f));
-                    //printf("press = %d.%d   ",(int)press,((int)(press*10000.0f)%10000));
-                    printf("deep  = %d.%d cm   ",deep_100/100,deep_100%100);
-          //          Serial.print("press=");
-          //          Serial.print(press);
+        }
 
-                    reading = p1[3];
-                    reading = reading << 8;
-                    reading |= p1[4];
-                    if (reading > 32768)
-                    {
-                      temp = (reading - 65844) / 256.0f;
-                    }
-                    else
-                    {
-                      temp = (reading-308) / 256.0f;
-                    }
+//                  press = fDat * 125 + 17.5;//WF5803_1BAR
+        press = fDat * 8 * 126 - 51.5;//WF5803_7BAR  - 31.5
+        printf("press= %d.%d \r\n",(int)(press),((int)(press*10000000.0f)%10000000));
 
-                    printf(", temp= %d.%d \r\n",(int)temp,((int)(temp*100.0f)%100));
+        if (a) {press_air = press ; a = 0;}
+        press = press_air > press ? press_air : press;
 
-          Delay_Ms(250);
+        int deep_100 = (int)(100*((press - press_air)/0.098f));
+        //printf("press = %d.%d   ",(int)press,((int)(press*10000.0f)%10000));`
+        printf("deep  = %d.%d cm   ",deep_100/100,deep_100%100);
+        //          Serial.print("press=");
+        //          Serial.print(press);
+
+        reading = p1[3];
+        reading = reading << 8;
+        reading |= p1[4];
+        if (reading > 32768)
+        {
+            temp = (reading - 65844) / 256.0f;
+        }
+        else
+        {
+            temp = (reading-308) / 256.0f;
+        }
+
+        printf(", temp= %d.%d \r\n",(int)temp,((int)(temp*100.0f)%100));
+
+        Delay_Ms(250);
     }
 }
