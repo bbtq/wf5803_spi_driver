@@ -84,8 +84,8 @@ int main(void)
 #else
     USART_Printf_Init(115200);
 #endif
-    printf("SystemClk:%d\r\n",SystemCoreClock);
-    printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
+    //printf("SystemClk:%d\r\n",SystemCoreClock);
+    //printf( "ChipID:%08x\r\n", DBGMCU_GetCHIPID() );
     long reading = 0;
     float press = 0;//kPa
     float temp = 0;//�?
@@ -109,18 +109,16 @@ int main(void)
             fDat = reading / 8388608.0f;
         }
 
-//                  press = fDat * 125 + 17.5;//WF5803_1BAR
+//      press = fDat * 125 + 17.5;//WF5803_1BAR    如果是使用10m级别的深传就使用这个
         press = fDat * 8 * 126 - 51.5;//WF5803_7BAR  - 31.5
-        printf("press= %d.%d \r\n",(int)(press),((int)(press*10000000.0f)%10000000));
+        printf("P=%d.%d pa\r\n",(int)(press),((int)(press*10000000.0f)%10000000));    //因为沁恒的芯片，如果想要打印出浮点型配置包，节省空间用了这种。
 
         if (a) {press_air = press ; a = 0;}
         press = press_air > press ? press_air : press;
 
         int deep_100 = (int)(100*((press - press_air)/0.098f));
-        //printf("press = %d.%d   ",(int)press,((int)(press*10000.0f)%10000));`
-        printf("deep  = %d.%d cm   ",deep_100/100,deep_100%100);
-        //          Serial.print("press=");
-        //          Serial.print(press);
+        //printf("P=%d.%d pa\r\n",(int)press,((int)(press*10000.0f)%10000));`
+        printf("D=%d.%d cm\r\n",deep_100/100,deep_100%100);
 
         reading = p1[3];
         reading = reading << 8;
@@ -134,7 +132,7 @@ int main(void)
             temp = (reading-308) / 256.0f;
         }
 
-        printf(", temp= %d.%d \r\n",(int)temp,((int)(temp*100.0f)%100));
+        printf("T=%d.%d C\r\n",(int)temp,((int)(temp*100.0f)%100));
 
         Delay_Ms(250);
     }
